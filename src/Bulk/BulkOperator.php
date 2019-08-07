@@ -82,14 +82,22 @@ abstract class BulkOperator
     private $affectedRows = 0;
 
     /**
-     * @param \PDO   $pdo                The PDO connection.
-     * @param string $table              The name of the table.
-     * @param array  $fields             The name of the relevant fields.
-     * @param int    $operationsPerQuery The number of operations to process in a single query.
+     * List of custom placeholders to use subqueries with PDO
+     * 
+     * @var array
+     */
+    protected $customPlaceholders = []; 
+
+    /**
+     * @param \PDO   $pdo                   The PDO connection.
+     * @param string $table                 The name of the table.
+     * @param array  $fields                The name of the relevant fields.
+     * @param int    $operationsPerQuery    The number of operations to process in a single query.
+     * @param array  $operationsPerQuery    List of custom placeholders to use subqueries with PDO.
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(\PDO $pdo, string $table, array $fields, int $operationsPerQuery = 100)
+    public function __construct(\PDO $pdo, string $table, array $fields, int $operationsPerQuery = 100, array $customPlaceholders = [])
     {
         if ($operationsPerQuery < 1) {
             throw new \InvalidArgumentException('The number of operations per query must be 1 or more.');
@@ -106,6 +114,7 @@ abstract class BulkOperator
         $this->fields    = $fields;
         $this->numFields = $numFields;
 
+        $this->customPlaceholders = $customPlaceholders;
         $this->operationsPerQuery = $operationsPerQuery;
 
         $query = $this->getQuery($operationsPerQuery);

@@ -15,7 +15,11 @@ class BulkInserter extends BulkOperator
     protected function getQuery(int $numRecords) : string
     {
         $fields       = implode(', ', $this->fields);
-        $placeholders = implode(', ', array_fill(0, $this->numFields, '?'));
+        if (!empty($this->customPlaceholders)) {
+            $placeholders = implode(', ', $this->customPlaceholders);
+        } else {
+            $placeholders = implode(', ', array_fill(0, $this->numFields, '?'));
+        }
 
         $query  = 'INSERT INTO ' . $this->table . ' (' . $fields . ') VALUES (' . $placeholders . ')';
         $query .= str_repeat(', (' . $placeholders . ')', $numRecords - 1);
